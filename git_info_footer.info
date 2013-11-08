@@ -1,0 +1,3 @@
+name = GIT Information Footer
+description = Adds git log output to the bottom of the page.
+core = 7.x

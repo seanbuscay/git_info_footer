@@ -1,0 +1,42 @@
+<?php
+/**
+ * @file
+ * A module to add git info at the bottom of the page.
+ */
+
+
+/**
+ * Implements hook_help().
+ */
+function git_info_footer_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#git_info_footer':
+      return t("Enable the module and clear the cache.  See the git revision info at the bottom of the page.");
+  }
+}
+
+/**
+ * Implements hook_page_alter().
+ */
+function git_info_footer_page_alter(&$page) {
+
+  $cmd = "git branch | sed -n '/\* /s///p'";
+  $branch = shell_exec($cmd);
+  $cmd = "git rev-parse --short HEAD";
+  $rev = shell_exec($cmd);
+  $branch_rev = $branch . 'rev: ' . $rev;
+
+  $page['page_bottom']['git_branch'] = array(
+    '#type' => 'markup',
+    '#markup' => '<div id="git~branch"><pre>' . $branch_rev . '</pre></div>',
+    '#weight' => 98,
+  );
+
+  $cmd = 'git log -5 --pretty=format:"%h - %an, %ar : %s"';
+  $revisions = shell_exec($cmd);
+  $page['page_bottom']['git_log'] = array(
+    '#type' => 'markup',
+    '#markup' => '<div id="git-log"><pre>' . $revisions . '</pre></div>',
+    '#weight' => 99,
+  );
+}
